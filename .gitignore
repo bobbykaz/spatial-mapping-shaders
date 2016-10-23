@@ -1,0 +1,10 @@
+*.sln
+*.csproj
+*.exe
+Source/Unity/UWP
+Source/Unity/obj
+Source/Unity/App
+Source/Unity/Library
+Source/Unity/Assets/WSATestCertificate*
+Source/Unity/.vs
+Source/Unity/Temp
