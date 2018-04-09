@@ -1,4 +1,6 @@
-﻿// Shader made by Robert Kazimiroff based on 'Wireframe.shader'
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+// Shader made by Robert Kazimiroff based on 'Wireframe.shader'
 // from HoloToolKit-Unity Repo by Microsoft at https://github.com/Microsoft/HoloToolkit-Unity
 // Original 'Wireframe.shader' code Copyright (C) Microsoft. All rights reserved.
 //
@@ -36,7 +38,7 @@ Shader "Surface Reconstruction/GlowWireframe" {
 
 	v2g vert(appdata_base v) {
 		v2g o;
-		o.viewPos = mul(UNITY_MATRIX_MVP, v.vertex);
+		o.viewPos = UnityObjectToClipPos(v.vertex);
 		return o;
 	}
 

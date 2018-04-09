@@ -1,4 +1,6 @@
-﻿// Shader made by Robert Kazimiroff based on 'Wireframe.shader'
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+// Shader made by Robert Kazimiroff based on 'Wireframe.shader'
 // from HoloToolKit-Unity Repo by Microsoft at https://github.com/Microsoft/HoloToolkit-Unity
 // Original 'Wireframe.shader' code Copyright (C) Microsoft. All rights reserved.
 //
@@ -11,6 +13,7 @@ Shader "Surface Reconstruction/RippleWaveWireframe"
 		_WireThickness("Wire thickness", Range(0, 800)) = 100
 		_TargetPosition("Ripple Start Position", Vector) = (0.0, 0.0, 0.0, 1.0)
 		_StartTime("Start time, seconds", Range(0, 100)) = 5.0
+		_RepeatAfterTime("Delay before next ripple, seconds. 0 will not repeat", Range(0,10)) = 2.5
 		_RippleWidth("RippleWidth, m", Range(0.1, 3)) = 0.5
 		_RippleHeight("RippleHeight, m", Range(0.1, 1)) = 0.3
 		_RippleSpeed("Ripple speed, m/s", Range(0.1, 3)) = 1
@@ -33,6 +36,7 @@ Shader "Surface Reconstruction/RippleWaveWireframe"
 		float _WireThickness;
 		float4 _TargetPosition;
 		float _StartTime;
+		float _RepeatAfterTime;
 		float _RippleWidth;
 		float _RippleHeight;
 		float _RippleSpeed;
@@ -49,7 +53,12 @@ Shader "Surface Reconstruction/RippleWaveWireframe"
 			o.distToTarget = length(mul(unity_ObjectToWorld, v.vertex).xyz - _TargetPosition.xyz);
 			float rippleTravelDistance = (_Time.y - _StartTime) * _RippleSpeed - _RippleWidth / 2.0;
 			float dist = o.distToTarget - rippleTravelDistance;
-			
+
+			if(dist < 0 && _RepeatAfterTime > 0)
+			{
+				dist = dist % ( _RippleSpeed * _RepeatAfterTime);
+			}
+
 			float4 vertStart = v.vertex;
 			if ( abs(dist) < _RippleWidth)
 			{
@@ -57,7 +66,7 @@ Shader "Surface Reconstruction/RippleWaveWireframe"
 				vertStart = vertStart + (convertedNorm * _RippleHeight * dist / _RippleWidth);
 			}
 
-			o.viewPos = mul(UNITY_MATRIX_MVP, vertStart);
+			o.viewPos = UnityObjectToClipPos(vertStart);
 			return o;
 		}
 
